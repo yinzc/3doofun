@@ -1,17 +1,23 @@
-import { Engine, Scene } from "@babylonjs/core";
+import { ArcRotateCamera, Engine, HemisphericLight, Scene, SceneLoader, Vector3 } from "@babylonjs/core";
 import { CreateSceneClass } from "../createScene";
 
-export class Demain implements CreateSceneClass {
+export class ImportingVillageGLBFile implements CreateSceneClass {
     createScene = async (
         engine: Engine, 
         canvas: HTMLCanvasElement
     ) : Promise<Scene> => {
         const scene = new Scene(engine);
         this.showDebug(scene);
+        const arcRotateCamera = new ArcRotateCamera("arcRotateCamera", -Math.PI/2, Math.PI/2.5, 15, new Vector3(0, 0, 0), scene);
+        arcRotateCamera.attachControl(canvas, true);
+        const hemisphericLight = new HemisphericLight("hemisphericLight", new Vector3(1, 1, 0), scene);
+        //const box = MeshBuilder.CreateBox("box", {}, scene);
+
+        SceneLoader.ImportMeshAsync("village", "https://assets.babylonjs.com/meshes/village.glb");
 
         return scene;
     };
-    
+
     /** Build Functions */
     showDebug = (scene : Scene) => {
         void Promise.all([
@@ -28,4 +34,7 @@ export class Demain implements CreateSceneClass {
     }
 }
 
-export default new Demain();
+export default new ImportingVillageGLBFile();
+
+
+
