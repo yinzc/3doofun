@@ -1,4 +1,4 @@
-import { ArcRotateCamera, Color3, Color4, DynamicTexture, Engine, HemisphericLight, Mesh, MeshBuilder, Scene, StandardMaterial, Vector3 } from "@babylonjs/core";
+import { ArcRotateCamera, Color3, Color4, DynamicTexture, Engine, HemisphericLight, MeshBuilder, Nullable, Scene, StandardMaterial, TransformNode, Vector3 } from "@babylonjs/core";
 import { CreateSceneClass } from "../createScene";
 
 export class MeshParents implements CreateSceneClass {
@@ -38,8 +38,9 @@ export class MeshParents implements CreateSceneClass {
         boxParent.rotation.y = 0;
         boxParent.rotation.z = -Math.PI / 4;
 
-        const boxChildAxes = localAxes(1, scene);
-
+        const boxChildAxes = this.localAxes(1, scene);
+        boxChildAxes.parent = boxChild;
+        this.showAxis(6, scene);
         return scene;
     };
     
@@ -58,17 +59,95 @@ export class MeshParents implements CreateSceneClass {
         });
     }
 
-    showAxis = (size, scene) => {
-        const makeTextPlane = (text, color, size) => {
+    showAxis = (size: number, scene: Scene) => {
+        const makeTextPlane = (text = "", color = "", size = undefined) => {
             const dynamicTexture = new DynamicTexture("DynamicTexture", 50, scene, true);
             dynamicTexture.hasAlpha = true;
             dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
             const plane = MeshBuilder.CreatePlane("TextPlane", size, scene);
-            plane.material = new StandardMaterial("TextPlaneMaterial", scene);
-            plane.material.backFaceCulling = false;
-            
+            const planeMaterial = new StandardMaterial("TextPlaneMaterial", scene);
+            planeMaterial.backFaceCulling = false;
+            planeMaterial.specularColor = new Color3(0, 0, 0);
+            planeMaterial.diffuseTexture = dynamicTexture;
+            plane.material = planeMaterial;
+            return plane;
+        };
+        const xoptions = {
+            points: [
+                new Vector3(0, 0, 0) , new Vector3(size, 0, 0), new Vector3(size * 0.95, 0.05 * size, 0), 
+                new Vector3(size, 0, 0), new Vector3(size * 0.95, -0.05 * size, 0)
+            ],
+            updatable: true,
+        };
+        const axisX = MeshBuilder.CreateLines("axisX", xoptions, scene);
+        axisX.color = new Color3(1, 0, 0);
+        const xChar = makeTextPlane("X", "red", size / 10);
+        xChar.position = new Vector3(0.9*size, -0.05*size, 0);
 
+        const yoptions = {
+            points: [
+                new Vector3(0, 0, 0), new Vector3(0, size, 0), new Vector3( -0.05 * size, size * 0.95, 0), 
+                new Vector3(0, size, 0), new Vector3( 0.05 * size, size * 0.95, 0)
+            ],
+            updatable: true,
+        };
+        const axisY = MeshBuilder.CreateLines("axisY", yoptions, scene);
+        axisY.color = new Color3(0, 1, 0);
+        const yChar = makeTextPlane("Y", "red", size / 10);
+        yChar.position = new Vector3(0, 0.9 * size, -0.05 * size);
+
+        const zoptions = {
+            points: [
+                new Vector3(0, 0, 0), new Vector3(0, 0, size), new Vector3( 0 , -0.05 * size, size * 0.95),
+                new Vector3(0, 0, size), new Vector3( 0, 0.05 * size, size * 0.95)
+            ],
+            updatable: true,
+        };
+        const axisZ = MeshBuilder.CreateLines("axisZ", zoptions, scene);
+        axisZ.color = new Color3(0, 0, 1);
+        const zChar = makeTextPlane("Z", "blue", size / 10);
+        zChar.position = new Vector3(0, 0.05 * size, 0.9 * size);
+    };
+
+    /** localAxes */
+    localAxes = (size: number, scene:Scene) => {
+        const local_axisX_options = {
+            points: [
+                new Vector3(0, 0, 0), new Vector3(size, 0, 0), new Vector3(size * 0.95, 0.05 * size, 0),
+                new Vector3(size, 0, 0), new Vector3(size * 0.95, -0.05 * size, 0)],
+            updatable: true,
+        };
+        const local_axisX = MeshBuilder.CreateLines("local_axisX", local_axisX_options, scene);
+        local_axisX.color = new Color3(1, 0, 0);
+
+        const local_axisY_options = {
+            points: [
+                new Vector3(0, 0, 0), new Vector3(0, size, 0), new Vector3(-0.05 * size, size * 0.95, 0),
+                new Vector3(0, size, 0), new Vector3(0.05 * size, size * 0.95, 0)
+            ],
+            updatable: true,
+        };
+        const local_axisY = MeshBuilder.CreateLines("local_axisY", local_axisY_options, scene);
+        local_axisY.color = new Color3(0, 1, 0);
+
+        const local_axisZ_options = {
+            points: [
+                new Vector3(0, 0, 0), new Vector3(0, 0, size), new Vector3(0, -0.05 * size, size * 0.95),
+                new Vector3(0, 0, size), new Vector3(0, 0.05 * size, size * 0.95)
+            ],
+            updatable: true,
+        };
+        const local_axisZ = MeshBuilder.CreateLines("local_axisZ", local_axisZ_options, scene);
+        local_axisZ.color = new Color3(0, 0, 1);
+        
+        const local_origin = new TransformNode("local_origin");
+        local_axisX.parent = local_origin;
+        local_axisY.parent = local_origin;
+        local_axisZ.parent = local_origin;
+        return local_origin;
     }
+    
+
 }
 
 export default new MeshParents();
