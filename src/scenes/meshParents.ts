@@ -8,7 +8,6 @@ export class MeshParents implements CreateSceneClass {
     ) : Promise<Scene> => {
         const scene = new Scene(engine);
         this.showDebug(scene);
-
         const arcRotateCamera = new ArcRotateCamera("arcRotateCamera", -Math.PI/2.2, Math.PI/2.5, 15, new Vector3(0, 0, 0));
         arcRotateCamera.attachControl(canvas, true);
         const hemisphericLight = new HemisphericLight("hemisphericLight", new Vector3(0,1,0), scene);
@@ -19,8 +18,8 @@ export class MeshParents implements CreateSceneClass {
         faceColors[3] = new  Color4(128, 0, 128); //Color3.Purple();
         faceColors[4] = new Color4(0, 1, 0); //Color3.Green();
         faceColors[5] = new Color4(255, 255, 0); //Color3.Yellow();
-        const boxParent = MeshBuilder.CreateBox("Box", {faceColors:faceColors});
-        const boxChild = MeshBuilder.CreateBox("Box", {size: 0.5, faceColors:faceColors});
+        const boxParent = MeshBuilder.CreateBox("Box", {faceColors: faceColors});
+        const boxChild = MeshBuilder.CreateBox("Box", {size: 0.5, faceColors: faceColors});
         boxChild.setParent(boxParent);
         boxChild.position.x = 0;
         boxChild.position.y = 2;
@@ -60,11 +59,11 @@ export class MeshParents implements CreateSceneClass {
     }
 
     showAxis = (size: number, scene: Scene) => {
-        const makeTextPlane = (text = "", color = "", size = undefined) => {
+        const makeTextPlane = (text: string, color: string, size :number) => {
             const dynamicTexture = new DynamicTexture("DynamicTexture", 50, scene, true);
             dynamicTexture.hasAlpha = true;
             dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color, "transparent", true);
-            const plane = MeshBuilder.CreatePlane("TextPlane", size, scene);
+            const plane = MeshBuilder.CreatePlane("TextPlane", {size}, scene);
             const planeMaterial = new StandardMaterial("TextPlaneMaterial", scene);
             planeMaterial.backFaceCulling = false;
             planeMaterial.specularColor = new Color3(0, 0, 0);
@@ -82,7 +81,7 @@ export class MeshParents implements CreateSceneClass {
         const axisX = MeshBuilder.CreateLines("axisX", xoptions, scene);
         axisX.color = new Color3(1, 0, 0);
         const xChar = makeTextPlane("X", "red", size / 10);
-        xChar.position = new Vector3(0.9*size, -0.05*size, 0);
+        xChar.position = new Vector3(0.9 * size, -0.05 * size, 0);
 
         const yoptions = {
             points: [

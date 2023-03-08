@@ -1,4 +1,5 @@
-import { ArcRotateCamera, Engine, HemisphericLight, Scene, SceneLoader, Vector3 } from "@babylonjs/core";
+import { ArcRotateCamera, Engine, HemisphericLight, Scene, SceneLoader, Vector3, Mesh, MeshBuilder } from "@babylonjs/core";
+import { OBJFileLoader } from "@babylonjs/loaders";
 import { CreateSceneClass } from "../createScene";
 
 export class FirstImportModel implements CreateSceneClass {
@@ -11,6 +12,7 @@ export class FirstImportModel implements CreateSceneClass {
         arcRotateCamera.attachControl(canvas, true);
         const hemisphericLight = new HemisphericLight("HemisphericLight", new Vector3(1, 1, 0), scene);
         // SceneLoader.ImportMeshAsync(["ground", "semi_house"], "https://assets.babylonjs.com/meshes/", "both_houses_scene.babylon");
+        SceneLoader.RegisterPlugin(new OBJFileLoader());
         SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "both_houses_scene.babylon").then((result) => {
             const house1 = scene.getMeshByName("detached_house");
             // if (house1) {

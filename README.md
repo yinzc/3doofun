@@ -27,13 +27,13 @@ To debug, open the browser's dev tool. Source maps are ready to be used. In case
 
 ## Loading different examples
 
-The `./src/scenes` directory contains a few examples of scenes that can be loaded. To load a specific scene, add a `?scene=FILENAME` to the URL (i.e. to load the ammo physics demo, use `http://localhost:8080/?scene=physicsWithAmmo`).
+The `./src/scenes` directory contains a few examples of scenes that can be loaded. To load a specific scene, add a `?scene=FILENAME` to the URL (i.e. to load the ammo physics demo, use `http://localhost:8080/?scene=physicsWithAmmo`, `http://babylon.3doofun.com:8080/?scene=physicsWithAmmo`).
 
 More and more scenes will be slowly added.
 
 ## WebGPU? yes please!
 
-Open the URL in a webgpu-enabled browser and add "?engine=webgpu" to the URL. If you want to add a different scene, add it as a query parameter: `http://localhost:8080/?scene=physicsWithAmmo&engine=webgpu`.
+Open the URL in a webgpu-enabled browser and add "?engine=webgpu" to the URL. If you want to add a different scene, add it as a query parameter: `http://localhost:8080/?scene=physicsWithAmmo&engine=webgpu`, `http://babylon.3doofun.com:8080/?scene=physicsWithAmmo&engine=webgpu`.
 
 ## What else can I do
 
