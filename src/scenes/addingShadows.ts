@@ -107,6 +107,7 @@ export class AddingShadows implements CreateSceneClass {
             ground!.receiveShadows = true;
         });
 
+        
 
         return scene;
     };
