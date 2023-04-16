@@ -1,4 +1,3 @@
-import "cannon";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { WebGPUEngine } from "@babylonjs/core/Engines/webgpuEngine";
 import { getSceneModuleWithName } from "./createScene";
