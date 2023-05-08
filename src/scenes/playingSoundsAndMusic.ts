@@ -1,5 +1,5 @@
 import { HaveALookAround } from './haveALookAround';
-import { AdvancedDynamicTexture, Button, Control, StackPanel } from '@babylonjs/gui';
+import { AdvancedDynamicTexture, Button, Control, StackPanel } from "@babylonjs/gui";
 import { Engine, Scene, Vector3, HemisphericLight, Sound, AudioEngine, FreeCamera, MeshBuilder, AssetsManager, DirectionalLight, StandardMaterial, Color3, PointLight, Texture, Analyser, EngineFactory, Mesh } from "@babylonjs/core";
 import { CreateSceneClass } from "../createScene";
 import cameraActionAndEvent from './cameraActionAndEvent';

@@ -1,4 +1,5 @@
-import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, PointLight, MeshBuilder, StandardMaterial, Color3, Animation, DirectionalLight, ShadowGenerator, SceneLoader, AnimationGroup, Scalar, CircleEase, EasingFunction, BezierCurveEase, CannonJSPlugin, FreeCamera, PhysicsImpostor, PhysicsEngine} from "@babylonjs/core";
+import { AmmoJSPlugin } from '@babylonjs/core/Physics/Plugins/ammoJSPlugin';
+import { Engine, Scene, ArcRotateCamera, Vector3, HemisphericLight, PointLight, MeshBuilder, StandardMaterial, Color3, Animation, DirectionalLight, ShadowGenerator, SceneLoader, AnimationGroup, Scalar, CircleEase, EasingFunction, BezierCurveEase, FreeCamera, PhysicsImpostor} from "@babylonjs/core";
 import { AdvancedDynamicTexture, StackPanel, Control, TextBlock, Slider, Button } from "@babylonjs/gui";
 import "@babylonjs/loaders";
 import { CreateSceneClass } from "../createScene";
@@ -10,8 +11,6 @@ export class AdvancedAnimatingMethods implements CreateSceneClass {
     ) : Promise<Scene> => {
         let scene = new Scene(engine);
         //this.showDebug(scene);
-        
-
         //Create a scaling animation at 30 FPS
         //scene = this.animationsAndPromises(canvas, scene);
         //scene = this.animationEvaluateExample(canvas, scene, engine);
@@ -48,7 +47,7 @@ export class AdvancedAnimatingMethods implements CreateSceneClass {
     }
 
     loggingStepIdForSphere = (canvas: HTMLCanvasElement, scene: Scene) => {
-        var physicsEngine = new CannonJSPlugin(false);
+        var physicsEngine = new AmmoJSPlugin(false);
         //var pyhsicsEngine = new PhysicsEngine(new Vector3(0, -9.81, 0),cannonJSplugin);
         scene.enablePhysics(new Vector3(0, -9.81, 0), physicsEngine);
         physicsEngine.setTimeStep(1 / 60);
@@ -77,15 +76,16 @@ export class AdvancedAnimatingMethods implements CreateSceneClass {
         materialBox.emissiveColor = new Color3(0, 0, 1);
         box.material = materialBox;
 
-        sphere.physicsImpostor = new PhysicsImpostor(sphere, PhysicsImpostor.SphereImpostor, { mass: 8, restitution: 0.9 }, scene);
-        ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+        new PhysicsImpostor(sphere, PhysicsImpostor.SphereImpostor, { mass: 8, restitution: 0.9 }, scene);
+        new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
         scene.onBeforeStepObservable.add((theScene) => {
             console.log("StepId: " + theScene.getStepId());
             box.rotation.y += 0.05;
         });
         scene.onAfterStepObservable.add((theScene)=>{
             console.log("StepId: " + theScene.getStepId());
-            if(sphere.physicsImpostor!.getLinearVelocity()!.length() < PhysicsEngine.Epsilon){
+            //if(sphere.physicsImpostor!.getLinearVelocity()!.length() < PhysicsEngine.Epsilon){
+            if(sphere.physicsImpostor!.getLinearVelocity()!.length()){
                 console.log("Sphere is at rest on stepId: " + theScene.getStepId());
                 console.log("box rotation.y is : " + box.rotation.y);
                 theScene.onAfterStepObservable.clear();
