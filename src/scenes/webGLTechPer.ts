@@ -22,11 +22,13 @@ export class WebGLTechPer implements CreateSceneClass {
         let scene = new Scene(engine);
         //scene.texturesEnabled = true;
         this.showDebug(scene);
-        // Lights and camera
-        const camera = new ArcRotateCamera("arcRotateCamera", -Math.PI/1.25, Math.PI/2, 130, Vector3.Zero(), scene);
-        camera.attachControl(canvas, true);
-        //const light = new DirectionalLight("hemisphericLight", new Vector3(100, -100, 100), scene);
-        const light = new HemisphericLight("light", new Vector3(1, 1, 0), scene);
+        //scene = await this.loadVRCVTEFiveModel(scene, canvas);
+        scene = await this.loadXRCVTEFiveModel(scene, canvas);
+        //scene = await this.loadXRFerAzzurroModel(scene, canvas);
+        return scene;
+    };
+
+    createSkeyBox = (scene: Scene) => {
         //Skybox
         const skybox = MeshBuilder.CreateBox("skyBox", {size: 800.0}, scene);
         const skyboxMaterial = new StandardMaterial("skyBox", scene);
@@ -36,20 +38,22 @@ export class WebGLTechPer implements CreateSceneClass {
         skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
         skyboxMaterial.specularColor = new Color3(0, 0, 0);
         skybox.material = skyboxMaterial;
+    }
 
-        //scene = await this.loadVRCVTEFiveModel(scene);
-        scene = await this.loadXRCVTEFiveModel(scene);
-        return scene;
-    };
+    loadXRCVTEFiveModel = async (scene: Scene, canvas: HTMLCanvasElement) => {
+        // Lights and camera
+        const camera = new ArcRotateCamera("arcRotateCamera", -Math.PI/1.25, Math.PI/2, 130, Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        //const light = new DirectionalLight("hemisphericLight", new Vector3(100, -100, 100), scene);
+        const light = new HemisphericLight("light", new Vector3(1, 1, 0), scene);
 
-    loadXRCVTEFiveModel = async (scene: Scene) => {
+        this.createSkeyBox(scene);
         // Create fiveFactory
         await SceneLoader.ImportMeshAsync("", "", cvteFiveFactoryGlbModel, scene).then((bimModel) => {
             let fiveFactory = scene.getMeshByUniqueId(7);
             if(fiveFactory != (undefined || null)){
                 fiveFactory.position = new Vector3(0, 0, 0);
                 console.log("fiveFactory uniqueId:" + fiveFactory.uniqueId);
-                this.loadFerAzzurroModel(scene);
             } else {
                 console.log("fiveFactory is null ... ... ");
             }
@@ -64,14 +68,20 @@ export class WebGLTechPer implements CreateSceneClass {
     }
 
     // load VR model
-    loadVRCVTEFiveModel = async (scene: Scene) => {
+    loadVRCVTEFiveModel = async (scene: Scene, canvas: HTMLCanvasElement) => {
+        // Lights and camera
+        const camera = new ArcRotateCamera("arcRotateCamera", -Math.PI/1.25, Math.PI/2, 130, Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        //const light = new DirectionalLight("hemisphericLight", new Vector3(100, -100, 100), scene);
+        const light = new HemisphericLight("light", new Vector3(1, 1, 0), scene);
+
+        this.createSkeyBox(scene);
         // Create fiveFactory
         await SceneLoader.ImportMeshAsync("", "", cvteFiveFactoryGlbModel, scene).then((bimModel) => {
             let fiveFactory = scene.getMeshByUniqueId(7);
             if(fiveFactory != (undefined || null)){
                 fiveFactory.position = new Vector3(0, 0, 0);
                 console.log("fiveFactory uniqueId:" + fiveFactory.uniqueId);
-                this.loadFerAzzurroModel(scene);
             } else {
                 console.log("fiveFactory is null ... ... ");
             }
@@ -99,13 +109,18 @@ export class WebGLTechPer implements CreateSceneClass {
         return scene;
     }
 
-    loadFerAzzurroModel = (scene: Scene) => {
+    loadXRFerAzzurroModel = async (scene: Scene, canvas: HTMLCanvasElement) =>  {
+        // Lights and camera
+        const camera = new ArcRotateCamera("arcRotateCamera", -Math.PI/2.25, Math.PI/2.5, 10, Vector3.Zero(), scene);
+        camera.attachControl(canvas, true);
+        const light = new HemisphericLight("light", new Vector3(1, 1, 0), scene);
+
         SceneLoader.ImportMeshAsync("", "", ferAzzurroGlbModel, scene).then((ferAzzurroModel) => {
             console.log("ferAzzurroModel: " + ferAzzurroModel.meshes);
             let ferAzzurro = scene.getMeshByUniqueId(2629)!;
-            ferAzzurro.rotation = new Vector3(0, -Math.PI/1.9, 0);
-            ferAzzurro.position = new Vector3(350, -19, 75);
-            ferAzzurro.scaling = new Vector3(2, 2, 2);
+            //ferAzzurro.rotation = new Vector3(0, -Math.PI/1.9, 0);
+            //ferAzzurro.position = new Vector3(350, -19, 75);
+            ferAzzurro.scaling = new Vector3(20, 20, 20);
             let ferAzzurroGround = scene.getMeshByUniqueId(2737)!;
             ferAzzurroGround.material!.alpha = 0;
             const animCar = new Animation("animCar", "position.x", 350, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
@@ -126,6 +141,13 @@ export class WebGLTechPer implements CreateSceneClass {
             ferAzzurro.animations.push(animCar);
             scene.beginAnimation(ferAzzurro, 0, 2000, true);
         });
+        // create XR environment
+        const environment = scene.createDefaultEnvironment();
+        // XR
+        const xrHelper = await scene.createDefaultXRExperienceAsync({
+            floorMeshes: [environment!.ground!]
+        });
+        return scene;
     }
 
     createGUI = (floors: Map<number, TransformNode>) => {
