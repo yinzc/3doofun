@@ -15,12 +15,12 @@ export class WebVRCamera implements CreateSceneClass {
         //arcRotateCamera.attachControl(canvas, true);
         //const hemisphericLight = new BABYLON.HemisphericLight("hemisphericLight", new BABYLON.Vector3(1, 1, 0), scene);
         //scene = this.vrHelmetExample(scene, canvas);
-        //scene = this.baseVRSceneExample(scene, canvas);
+        scene = this.baseVRSceneExample(scene, canvas);
         //scene = this.fallbackOrientationCameraExample(scene, canvas);
         //scene = this.accessingVRDevicePositionAndRotationExample(scene, canvas);
         //scene = this.gazeAndInteractionExample(scene, canvas);
         //scene = this.gazeTrackerMeshExample(scene, canvas);
-        scene = this.grabbingObjectsExample(scene, canvas);
+        //scene = this.grabbingObjectsExample(scene, canvas);
         return scene;
     };
     fruitNinjaExample = (scene: BABYLON.Scene, canvas: HTMLCanvasElement) => {};
