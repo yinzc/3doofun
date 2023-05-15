@@ -1,3 +1,4 @@
+import { LoadCVTEFive } from './loadCVTEFive';
 import { Engine, Scene, ArcRotateCamera, Vector3, Mesh, HemisphericLight, Color3, Texture, MeshBuilder, SceneLoader, TransformNode, CubeTexture, Animation, StandardMaterial } from "@babylonjs/core";
 import { CreateSceneClass } from "../createScene";
 import "@babylonjs/loaders";
@@ -18,7 +19,7 @@ export class WebGLTechPer implements CreateSceneClass {
         engine: Engine,
         canvas: HTMLCanvasElement
     ): Promise<Scene> => {
-        const scene = new Scene(engine);
+        let scene = new Scene(engine);
         //scene.texturesEnabled = true;
         this.showDebug(scene);
         // Lights and camera
@@ -35,19 +36,70 @@ export class WebGLTechPer implements CreateSceneClass {
         skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
         skyboxMaterial.specularColor = new Color3(0, 0, 0);
         skybox.material = skyboxMaterial;
-        
+
+        //scene = await this.loadVRCVTEFiveModel(scene);
+        scene = await this.loadXRCVTEFiveModel(scene);
+        return scene;
+    };
+
+    loadXRCVTEFiveModel = async (scene: Scene) => {
         // Create fiveFactory
         await SceneLoader.ImportMeshAsync("", "", cvteFiveFactoryGlbModel, scene).then((bimModel) => {
-            let fiveFactory = scene.getMeshByUniqueId(3);
-
+            let fiveFactory = scene.getMeshByUniqueId(7);
             if(fiveFactory != (undefined || null)){
                 fiveFactory.position = new Vector3(0, 0, 0);
                 console.log("fiveFactory uniqueId:" + fiveFactory.uniqueId);
+                this.loadFerAzzurroModel(scene);
             } else {
                 console.log("fiveFactory is null ... ... ");
             }
         });
+        // create XR environment
+        const environment = scene.createDefaultEnvironment();
+        // XR
+        const xrHelper = await scene.createDefaultXRExperienceAsync({
+            floorMeshes: [environment!.ground!]
+        });
+        return scene;
+    }
 
+    // load VR model
+    loadVRCVTEFiveModel = async (scene: Scene) => {
+        // Create fiveFactory
+        await SceneLoader.ImportMeshAsync("", "", cvteFiveFactoryGlbModel, scene).then((bimModel) => {
+            let fiveFactory = scene.getMeshByUniqueId(7);
+            if(fiveFactory != (undefined || null)){
+                fiveFactory.position = new Vector3(0, 0, 0);
+                console.log("fiveFactory uniqueId:" + fiveFactory.uniqueId);
+                this.loadFerAzzurroModel(scene);
+            } else {
+                console.log("fiveFactory is null ... ... ");
+            }
+        });
+        // create VR environment
+        var VRHelper = scene.createDefaultVRExperience();
+        VRHelper.enableInteractions();
+        // Only show gaze dot on meshes with Flags in their name (eg. flags above user)
+        VRHelper.raySelectionPredicate = (mesh) => {
+            if (mesh.name.indexOf("Flags") !== -1) {
+                return true;
+            }
+            return false;
+        };
+        // Only fire onNewMeshSelected event if the selected mesh's name contains Flags01 (eg. only one of the flags)
+        VRHelper.meshSelectionPredicate = (mesh) => {
+            if (mesh.name.indexOf("Flags01") !== -1) {
+                return true;
+            }
+            return false;
+        };
+        VRHelper.onNewMeshSelected.add((mesh) => {
+            console.log(mesh.name);
+        });
+        return scene;
+    }
+
+    loadFerAzzurroModel = (scene: Scene) => {
         SceneLoader.ImportMeshAsync("", "", ferAzzurroGlbModel, scene).then((ferAzzurroModel) => {
             console.log("ferAzzurroModel: " + ferAzzurroModel.meshes);
             let ferAzzurro = scene.getMeshByUniqueId(2629)!;
@@ -56,7 +108,6 @@ export class WebGLTechPer implements CreateSceneClass {
             ferAzzurro.scaling = new Vector3(2, 2, 2);
             let ferAzzurroGround = scene.getMeshByUniqueId(2737)!;
             ferAzzurroGround.material!.alpha = 0;
-
             const animCar = new Animation("animCar", "position.x", 350, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
             const carKeys = [];
             carKeys.push({
@@ -75,54 +126,7 @@ export class WebGLTechPer implements CreateSceneClass {
             ferAzzurro.animations.push(animCar);
             scene.beginAnimation(ferAzzurro, 0, 2000, true);
         });
-
-
-        // SceneLoader.ImportMeshAsync("", "", plantSceneGlbModel, scene).then((plantSceneModel) => {
-        //     var xrHelper = scene.createDefaultXRExperienceAsync({floorMeshes: [scene.getMeshByUniqueId(3)!, scene.getMeshByUniqueId(2629)!]});
-        //     // var VRHelper = scene.createDefaultVRExperience();
-        //     // VRHelper.enableInteractions();
-        //     // // Only show gaze dot on meshes with Flags in their name (eg. flags above user)
-        //     // VRHelper.raySelectionPredicate = (mesh) => {
-        //     //     if (mesh.name.indexOf("Flags") !== -1) {
-        //     //         return true;
-        //     //     }
-        //     //     return false;
-        //     // };
-        //     // // Only fire onNewMeshSelected event if the selected mesh's name contains Flags01 (eg. only one of the flags)
-        //     // VRHelper.meshSelectionPredicate = (mesh) => {
-        //     //     if (mesh.name.indexOf("Flags01") !== -1) {
-        //     //         return true;
-        //     //     }
-        //     //     return false;
-        //     // };
-        //     // VRHelper.onNewMeshSelected.add((mesh) => {
-        //     //     console.log(mesh.name);
-        //     // });
-        //     console.log("plantSceneModel: " + plantSceneModel.meshes);
-        // });
-
-        
-
-        // SceneLoader.ImportMeshAsync("", "", ferPininfarinaGlbModel, scene).then((ferPininfarinaModel) => {
-        //     console.log("ferPininfarinaModel: " + ferPininfarinaModel.meshes);
-        //     let ferPininfarina = scene.getMeshByUniqueId(2625);
-        //     if (ferPininfarina != (undefined || null)) {
-        //         console.log("ferPininfarina uniqueId:" + ferPininfarina.uniqueId);
-        //         ferPininfarina.position = new Vector3(10, 1, 0);
-        //         ferPininfarina.scaling = new Vector3(2, 2, 2);
-        //     } else {
-        //         console.log("ferPininfarina is null ... ... Ferrari 550 Barchetta Pininfarina 2000 by Alex.Ka..obj.cleaner.materialmerger.gles ");
-        //     }
-        // });
-        // const directionalLighttwo = new DirectionalLight("hemisphericLight2", new Vector3(100, -100, -100), scene);
-        // directionalLighttwo.intensity = 0.5;
-        // const directionalLightthree = new DirectionalLight("hemisphericLight3", new Vector3(-100, -100, 100), scene);
-        // directionalLightthree.intensity = 0.25;
-        // const directionalLightfour = new DirectionalLight("hemisphericLight4", new Vector3(-100, -100, -100), scene);
-        // directionalLightfour.intensity = 0.25;
-        
-        return scene;
-    };
+    }
 
     createGUI = (floors: Map<number, TransformNode>) => {
         const gui = AdvancedDynamicTexture.CreateFullscreenUI("UI");
