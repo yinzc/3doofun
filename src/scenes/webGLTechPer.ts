@@ -42,7 +42,7 @@ export class WebGLTechPer implements CreateSceneClass {
 
     loadXRCVTEFiveModel = async (scene: Scene, canvas: HTMLCanvasElement) => {
         // Lights and camera
-        const camera = new ArcRotateCamera("arcRotateCamera", -Math.PI/1.25, Math.PI/2, 130, Vector3.Zero(), scene);
+        const camera = new ArcRotateCamera("arcRotateCamera", -Math.PI/1.25, Math.PI/5, 330, Vector3.Zero(), scene);
         camera.attachControl(canvas, true);
         //const light = new DirectionalLight("hemisphericLight", new Vector3(100, -100, 100), scene);
         const light = new HemisphericLight("light", new Vector3(1, 1, 0), scene);
